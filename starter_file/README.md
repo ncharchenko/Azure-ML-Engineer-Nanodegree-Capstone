@@ -8,7 +8,7 @@ League of Legends is a competitive 5v5 esport title and is the largest esport in
 ## Dataset
 
 ### Overview
-The dataset I am using is a collection of match data as well as compiled statistics courtesy of Tim "Magic" Sevenhuysen of Oracle's Elixir. The dataset comprises of stats for not only teams, but also the individual players on each team.
+The dataset I am using is a collection of match data as well as compiled statistics courtesy of Tim "Magic" Sevenhuysen of Oracle's Elixir [can be accessed here](https://oracleselixir-downloadable-match-data.s3-us-west-2.amazonaws.com/2020_LoL_esports_match_data_from_OraclesElixir_20210115.csv). The dataset comprises of stats for not only teams, but also the individual players on each team.
 
 ### Task
 *TODO*: Explain the task you are going to be solving with this dataset and the features you will be using for it.
