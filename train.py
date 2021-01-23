@@ -23,11 +23,17 @@ def clean_data(data):
 
     # Create dummy variables for player positions.
     x_df = pd.get_dummies(df, columns=['position'])
-
-    y_df = x_df.pop("result")
     
     # Positions no longer needed after feature engineering.
     del df['position']
+
+    df.dropna(inplace=True)
+    indices_to_keep = ~df.isin([np.nan, np.inf, -np.inf]).any(1)
+    df = df[indices_to_keep].astype(np.float64)
+
+    y_df = x_df.pop("result")
+
+    x_df.reset_index()
 
     return x_df, y_df
 
