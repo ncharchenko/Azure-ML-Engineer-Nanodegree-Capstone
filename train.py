@@ -1,3 +1,4 @@
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 import argparse
 import os
@@ -9,16 +10,22 @@ import pandas as pd
 from azureml.core.run import Run
 from azureml.data.dataset_factory import TabularDatasetFactory
 
-def clean_data(df):
+def clean_data(data):
+    # Our problem space revolves around predicting game outcomes based on early game data, so we only focus on the early game (stats at 10 and 15 min).
+    columns = ['side', 'result', 'golddiffat10', 'xpdiffat10', 'golddiffat15', 'xpdiffat15']
+
+    df = pd.DataFrame(data, columns=columns)
+
     # We are looking at the games from the lens of Blue side.
     df = df.loc[df['side'] == 'Blue']
 
     # Side no longer needed so we can delete this field.
     del df['side']
 
+    # Remove any incomplete entries from the dataset.
     df.dropna(inplace=True)
     indices_to_keep = ~df.isin([np.nan, np.inf, -np.inf]).any(1)
-    df = df[indices_to_keep].astype(np.float64)
+    x_df = df[indices_to_keep]
 
     y_df = x_df.pop("result")
 
@@ -46,15 +53,15 @@ def main():
     # Add arguments
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--C', type=float, default=1.0, help="Inverse of regularization strength. Smaller values cause stronger regularization")
-    parser.add_argument('--max_iter', type=int, default=100, help="Maximum number of iterations to converge")
+    parser.add_argument('--n_estimators', type=int, default=100, help="Number of trees in the forest.")
+    parser.add_argument('--max_leaf_nodes', type=int, default=None, help="Maximum number of leaf nodes. This restricts tree growth.")
 
     args = parser.parse_args()
 
-    run.log("Regularization Strength:", np.float(args.C))
-    run.log("Max iterations:", np.int(args.max_iter))
+    run.log("Number of estimators:", np.int(args.n_estimators))
+    run.log("Max leaf nodes:", np.int(args.max_leaf_nodes))
 
-    model = LogisticRegression(C=args.C, max_iter=args.max_iter).fit(x_train, y_train)
+    model = GradientBoostingClassifier(n_estimators=args.n_estimators, max_leaf_nodes=args.max_leaf_nodes).fit(x_train, y_train)
 
     accuracy = model.score(x_test, y_test)
     run.log("Accuracy", np.float(accuracy))
