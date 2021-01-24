@@ -58,7 +58,7 @@ def main():
     args = parser.parse_args()
 
     run.log("Number of estimators:", np.float(args.C))
-    run.log("Max leaf nodes:", np.int(args.max_iter))
+    run.log("Max iterations:", np.int(args.max_iter))
 
     model = LogisticRegression(C=args.C, max_iter=args.max_iter).fit(x_train, y_train)
 
