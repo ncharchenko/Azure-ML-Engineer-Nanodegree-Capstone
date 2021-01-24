@@ -9,23 +9,12 @@ import pandas as pd
 from azureml.core.run import Run
 from azureml.data.dataset_factory import TabularDatasetFactory
 
-def clean_data(data):
-    # Filter by most significant metrics as well as results and sides.
-    player_columns = ['side', 'position', 'result', 'golddiffat10', 'xpdiffat10', 'golddiffat15', 'xpdiffat15']
-
-    df = pd.DataFrame(data, columns=player_columns)
-
-    # We are looking at the stat differences from the lens of Blue side.
+def clean_data(df):
+    # We are looking at the games from the lens of Blue side.
     df = df.loc[df['side'] == 'Blue']
 
     # Side no longer needed so we can delete this field.
     del df['side']
-
-    # Create dummy variables for player positions.
-    x_df = pd.get_dummies(df, columns=['position'])
-    
-    # Positions no longer needed after feature engineering.
-    del df['position']
 
     df.dropna(inplace=True)
     indices_to_keep = ~df.isin([np.nan, np.inf, -np.inf]).any(1)
@@ -40,7 +29,7 @@ def clean_data(data):
     
         
 # Import player data CSV
-ds = TabularDatasetFactory.from_delimited_files(path="https://github.com/ncharchenko/Azure-ML-Engineer-Nanodegree-Capstone/raw/master/OraclesElixir_lol_match_data_players.csv")
+ds = TabularDatasetFactory.from_delimited_files(path="https://github.com/ncharchenko/Azure-ML-Engineer-Nanodegree-Capstone/raw/master/OraclesElixir_lol_match_data_teams.csv")
 
 player_data = ds.to_pandas_dataframe()
 
