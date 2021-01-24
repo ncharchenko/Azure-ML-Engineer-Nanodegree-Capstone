@@ -1,4 +1,3 @@
-from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 import argparse
 import os
@@ -12,7 +11,7 @@ from azureml.data.dataset_factory import TabularDatasetFactory
 
 def clean_data(data):
     # Our problem space revolves around predicting game outcomes based on early game data, so we only focus on the early game (stats at 10 and 15 min).
-    columns = ['side', 'result', 'golddiffat10', 'xpdiffat10', 'golddiffat15', 'xpdiffat15']
+    columns = ['side', 'result', 'firstblood', 'firstherald', 'firsttower', 'golddiffat10', 'xpdiffat10', 'golddiffat15', 'xpdiffat15']
 
     df = pd.DataFrame(data, columns=columns)
 
@@ -53,15 +52,15 @@ def main():
     # Add arguments
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--n_estimators', type=int, default=100, help="Number of trees in the forest.")
-    parser.add_argument('--max_leaf_nodes', type=int, default=None, help="Maximum number of leaf nodes. This restricts tree growth.")
+    parser.add_argument('--C', type=float, default=1.0, help="Inverse of regularization strength. Stronger regularization comes from smaller values.")
+    parser.add_argument('--max_iter', type=int, default=100, help="Maximum number of iterations to converge.")
 
     args = parser.parse_args()
 
-    run.log("Number of estimators:", np.int(args.n_estimators))
-    run.log("Max leaf nodes:", np.int(args.max_leaf_nodes))
+    run.log("Number of estimators:", np.float(args.C))
+    run.log("Max leaf nodes:", np.int(args.max_iter))
 
-    model = GradientBoostingClassifier(n_estimators=args.n_estimators, max_leaf_nodes=args.max_leaf_nodes).fit(x_train, y_train)
+    model = LogisticRegression(C=args.C, max_iter=args.max_iter).fit(x_train, y_train)
 
     accuracy = model.score(x_test, y_test)
     run.log("Accuracy", np.float(accuracy))
