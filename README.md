@@ -1,7 +1,6 @@
-# Which Role in League of Legends Carries the Hardest?
+# Predicting League of Legends Pro Matches
 
-League of Legends is a competitive 5v5 esport title and is the largest esport in the world. Every year, thousands of professional matches are played around the world. Each player takes one of five roles.
-
+League of Legends is a competitive 5v5 esport title and is the largest esport in the world. Every year, thousands of professional matches are played around the world.
 ## Project Set Up and Installation
 *OPTIONAL:* If your project has any special installation steps, this is where you should put it. To turn this project into a professional portfolio project, you are encouraged to explain how to set up this project in AzureML.
 
