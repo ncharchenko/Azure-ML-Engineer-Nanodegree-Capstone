@@ -11,7 +11,7 @@ from azureml.data.dataset_factory import TabularDatasetFactory
 
 def clean_data(data):
     # Our problem space revolves around predicting game outcomes based on early game data, so we only focus on the early game (stats at 10 and 15 min).
-    columns = ['side', 'result', 'firstblood', 'firstherald', 'firsttower', 'golddiffat10', 'xpdiffat10', 'golddiffat15', 'xpdiffat15']
+    columns = ['side', 'result', 'golddiffat15', 'xpdiffat15']
 
     df = pd.DataFrame(data, columns=columns)
 
@@ -57,12 +57,18 @@ def main():
 
     args = parser.parse_args()
 
-    run.log("Number of estimators:", np.float(args.C))
+    run.log("C:", np.float(args.C))
     run.log("Max iterations:", np.int(args.max_iter))
 
     model = LogisticRegression(C=args.C, max_iter=args.max_iter).fit(x_train, y_train)
 
     accuracy = model.score(x_test, y_test)
+
+    test_df = model.predict_proba(x_test)[:,1]
+
+    print("Probability model output.")
+    print(test_df)
+
     run.log("Accuracy", np.float(accuracy))
 
 if __name__ == '__main__':
