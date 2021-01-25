@@ -42,9 +42,7 @@ player_data = ds.to_pandas_dataframe()
 # Process dataframe
 x, y = clean_data(player_data)
 
-x_train, x_test = train_test_split(x, test_size=0.2)
-
-y_train, y_test = train_test_split(y, test_size=0.2)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
 
 run = Run.get_context()
 
@@ -58,7 +56,7 @@ def main():
     args = parser.parse_args()
 
     run.log("Number of estimators:", np.float(args.C))
-    run.log("Max leaf nodes:", np.int(args.max_iter))
+    run.log("Max iterations:", np.int(args.max_iter))
 
     model = LogisticRegression(C=args.C, max_iter=args.max_iter).fit(x_train, y_train)
 
