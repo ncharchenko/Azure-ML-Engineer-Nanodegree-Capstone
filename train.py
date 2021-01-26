@@ -11,7 +11,7 @@ from azureml.data.dataset_factory import TabularDatasetFactory
 
 def clean_data(data):
     # Our problem space revolves around predicting game outcomes based on early game data, so we only focus on the early game (stats at 10 and 15 min).
-    columns = ['side', 'result', 'golddiffat15', 'xpdiffat15']
+    columns = ['side', 'result', 'golddiffat10', 'xpdiffat10', 'golddiffat15', 'xpdiffat15']
 
     df = pd.DataFrame(data, columns=columns)
 
