@@ -17,7 +17,7 @@ from inference_schema.schema_decorators import input_schema, output_schema
 from inference_schema.parameter_types.numpy_parameter_type import NumpyParameterType
 from inference_schema.parameter_types.pandas_parameter_type import PandasParameterType
 
-input_sample = pd.DataFrame({"golddiffat10": -500, "xpdiffat10": -300, "golddiffat15": 2000, "xpdiffat15": 1600})
+input_sample = pd.DataFrame([{"golddiffat10": -500, "xpdiffat10": -300, "golddiffat15": 2000, "xpdiffat15": 1600}])
 
 try:
     log_server.enable_telemetry(INSTRUMENTATION_KEY)
@@ -43,11 +43,10 @@ def init():
         logging_utilities.log_traceback(e, logger)
         raise
 
-
-@input_schema('data', PandasParameterType(input_sample))
 @output_schema(NumpyParameterType(np.array([0])))
 def run(data):
     try:
+        data = json.loads(data)['data']
         result = model.predict(data)
         return json.dumps({"result": result.tolist()})
     except Exception as e:
