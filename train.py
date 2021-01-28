@@ -11,15 +11,20 @@ from azureml.data.dataset_factory import TabularDatasetFactory
 
 def clean_data(data):
     # Our problem space revolves around predicting game outcomes based on early game data, so we only focus on the early game (stats at 10 and 15 min).
-    columns = ['side', 'result', 'golddiffat10', 'xpdiffat10', 'golddiffat15', 'xpdiffat15']
+    columns = ['side', 'position', 'result', 'golddiffat10', 'xpdiffat10', 'golddiffat15', 'xpdiffat15']
 
     df = pd.DataFrame(data, columns=columns)
 
     # We are looking at the games from the lens of Blue side.
     df = df.loc[df['side'] == 'Blue']
 
+    # Take only the team data.
+    df = df[df.position.eq('team')]
+
     # Side no longer needed so we can delete this field.
-    del df['side']
+    df.drop(['side'], inplace=True, axis=1, errors='ignore')
+    # We also no longer need positions.
+    df.drop(['position'], inplace=True, axis=1, errors='ignore')
 
     # Remove any incomplete entries from the dataset.
     df.dropna(inplace=True)
@@ -35,7 +40,7 @@ def clean_data(data):
     
         
 # Import player data CSV
-ds = TabularDatasetFactory.from_delimited_files(path="https://github.com/ncharchenko/Azure-ML-Engineer-Nanodegree-Capstone/raw/master/OraclesElixir_lol_match_data_teams.csv")
+ds = TabularDatasetFactory.from_delimited_files(path="https://oracleselixir-downloadable-match-data.s3-us-west-2.amazonaws.com/2020_LoL_esports_match_data_from_OraclesElixir_20210126.csv")
 
 player_data = ds.to_pandas_dataframe()
 
