@@ -20,12 +20,12 @@ The objective of this project is to predict the outcome of professional League o
 We access the data for HyperDrive via the Oracle's Elixir website directly and use a 'cleaned' CSV file for AutoML. The 'cleaned' data has all non-imporant columns removed and has removed the entries for individual players. Our task calls for us to only use the 'team' entries.
 
 ## Automated ML
-*TODO*: Give an overview of the `automl` settings and configuration you used for this experiment
     experiment_timeout_minutes: 30: Defines the maximum amount of time the iterations can take before the experiment terminates.
     task="classification": Defines the task to be performed by AutoML.
     primary_metric: "accuracy": Defines the metric optimized for model selection.
     validation_size: 0.2: Specifies the proportion of the data that is held out for validation and testing.
     label_column_name: "result": The name of our label column (what our model will predict).
+    
 ### Results
 The best AutoML Model was a VotingEnsemble classifier with an accuracy of 75.13%. From looking at the notebook output, we see that this comprises of an ensemble of RandomForest, LightGBM, ExtremeRandomTrees, and LogisticRegression algorithms.
 
@@ -41,17 +41,27 @@ I chose to use a LogisticRegression model with SKLearn to run a HyperDrive exper
 * C: Determines regularization strength. Higher C value means less regularization.
 * Maximum # of Iterations: The maximum number of training iterations per child run.
 
-For parameter sampling, I chose Bayesian sampling, which picks hyperparameter samples based on the performances of previous samples. Therefore, there is no need for an early termination policy.
+For parameter sampling, I chose Bayesian sampling, which picks hyperparameter samples based on the performances of previous samples. Therefore, there is no need for an early termination policy. We can add more parameters to tune as well as apply the same suggested improvements as with the AutoML model. As with the AutoML model, we are constrained in our accuracy by domain and problem space.
 ### Results
-*TODO*: What are the results you got with your model? What were the parameters of the model? How could you have improved it?
-
-*TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
+The best HyperDrive run had an accuracy of 77.36%. The regularization strength was 4.0954 and the maximum number of iterations was 300.
+![HDRunDetails](./screenshots/hyperdrive_run_details.PNG)
+![HDBestModel](./screenshots/best_hyperdrive.PNG)
 
 ## Model Deployment
-*TODO*: Give an overview of the deployed model and instructions on how to query the endpoint with a sample input.
+In order to deploy a model as an endpoint, we follow these steps:
+1. Save the trained model.
+2. Provide configuration files such as the scoring script and environment files. If deploying an AutoML model as an endpoint, AutoML actually provides a scoring script in `outputs/scoring_file_v_1_0_0.py` that can be used as the entry script for the endpoint.
+3. Technical details such as container type and resource allocation. Application Insights can also be enabled.
 
+For this project, I deployed the AutoML model as an Azure Container Instance (ACI) with 1 CPU, 4 GB RAM, and application insights enabled.
+[!EndpointCode](./screenshots/endpoint.PNG, "Endpoint deployment in Jupyter Notebook using Azure ML SDK.")
+[!Endpoint](./screenshots/deployed_endpoint.PNG)
+
+To query our endpoint, we need to create a JSON object based on our scoring script as well as the Swagger JSON which functions as a schema. We then need the scoring URI (which can be accessed by the scoring_uri member of the Webservice class). We then create our POST request and send it to our endpoint like this:
+```python
+headers = {'Content-Type': 'application/json'}
+
+response = requests.post(scoring_uri, input_data, headers=headers)
+```
 ## Screen Recording
 [Screencast link](https://youtu.be/WbFmuYzQSkw)
-
-## Standout Suggestions
-*TODO (Optional):* This is where you can provide information about any standout suggestions that you have attempted.
