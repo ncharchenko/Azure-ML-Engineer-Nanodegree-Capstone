@@ -11,13 +11,15 @@ import joblib
 
 import azureml.automl.core
 from azureml.automl.core.shared import logging_utilities, log_server
-from inference_schema.schema_decorators import input_schema, output_schema
 from azureml.telemetry import INSTRUMENTATION_KEY
+
+from inference_schema.schema_decorators import input_schema, output_schema
 from inference_schema.parameter_types.numpy_parameter_type import NumpyParameterType
 from inference_schema.parameter_types.pandas_parameter_type import PandasParameterType
 
-input_sample = pd.DataFrame({'golddiffat10': 0, 'xpdiffat10': 0, 'golddiffat15': 0, 'xpdiffat15': 0})
 
+input_sample = pd.DataFrame({"Column1": pd.Series([0], dtype="int64"), "golddiffat10": pd.Series([0.0], dtype="float64"), "xpdiffat10": pd.Series([0.0], dtype="float64"), "golddiffat15": pd.Series([0.0], dtype="float64"), "xpdiffat15": pd.Series([0.0], dtype="float64")})
+output_sample = np.array([0])
 try:
     log_server.enable_telemetry(INSTRUMENTATION_KEY)
     log_server.set_verbosity('INFO')
@@ -42,8 +44,9 @@ def init():
         logging_utilities.log_traceback(e, logger)
         raise
 
+
 @input_schema('data', PandasParameterType(input_sample))
-@output_schema(NumpyParameterType(np.array([0])))
+@output_schema(NumpyParameterType(output_sample))
 def run(data):
     try:
         result = model.predict(data)
