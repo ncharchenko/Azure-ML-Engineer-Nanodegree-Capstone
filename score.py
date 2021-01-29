@@ -11,7 +11,12 @@ import joblib
 
 import azureml.automl.core
 from azureml.automl.core.shared import logging_utilities, log_server
+from inference_schema.schema_decorators import input_schema, output_schema
 from azureml.telemetry import INSTRUMENTATION_KEY
+from inference_schema.parameter_types.numpy_parameter_type import NumpyParameterType
+from inference_schema.parameter_types.pandas_parameter_type import PandasParameterType
+
+input_sample = pd.DataFrame({'golddiffat10': 0, 'xpdiffat10': 0, 'golddiffat15': 0, 'xpdiffat15': 0})
 
 try:
     log_server.enable_telemetry(INSTRUMENTATION_KEY)
@@ -37,9 +42,10 @@ def init():
         logging_utilities.log_traceback(e, logger)
         raise
 
+@input_schema('data', PandasParameterType(input_sample))
+@output_schema(NumpyParameterType(np.array([0])))
 def run(data):
     try:
-        data = np.array(json.loads(data))
         result = model.predict(data)
         return json.dumps({"result": result.tolist()})
     except Exception as e:
