@@ -54,8 +54,8 @@ In order to deploy a model as an endpoint, we follow these steps:
 3. Technical details such as container type and resource allocation. Application Insights can also be enabled.
 
 For this project, I deployed the AutoML model as an Azure Container Instance (ACI) with 1 CPU, 4 GB RAM, and application insights enabled.
-[!EndpointCode](./screenshots/endpoint.PNG, "Endpoint deployment in Jupyter Notebook using Azure ML SDK.")
-[!Endpoint](./screenshots/deployed_endpoint.PNG)
+![EndpointCode](./screenshots/endpoint.PNG, "Endpoint deployment in Jupyter Notebook using Azure ML SDK.")
+![Endpoint](./screenshots/deployed_endpoint.PNG)
 
 To query our endpoint, we need to create a JSON object based on our scoring script as well as the Swagger JSON which functions as a schema. We then need the scoring URI (which can be accessed by the scoring_uri member of the Webservice class). We then create our POST request and send it to our endpoint like this:
 ```python
