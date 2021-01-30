@@ -17,7 +17,7 @@ The dataset I am using is a collection of 2020 match data courtesy of Tim "Magic
 The objective of this project is to predict the outcome of professional League of Legends matches given early game data. In League of Legends, the early game is the first fifteen minutes of the game and the two most significant metrics used to determine game state are team gold difference and team experience (XP) difference. These are measured at ten minutes, fifteen minutes, and the end of the game. We also notice that there is a results column, with 0 for a loss and a 1 for a win. This makes our task a problem of classification. **NOTE: Much like in traditional sports, the natural variance given by the human element of League of Legends means that even with good statistics at ten/fifteen minutes, a victory is not guaranteed.**
 
 ### Access
-We access the data for HyperDrive via the Oracle's Elixir website directly and use a 'cleaned' CSV file for AutoML. The 'cleaned' data has all non-imporant columns removed and has removed the entries for individual players. Our task calls for us to only use the 'team' entries.
+We access the data for HyperDrive via the Oracle's Elixir website directly through [this link](https://oracleselixir-downloadable-match-data.s3-us-west-2.amazonaws.com/2020_LoL_esports_match_data_from_OraclesElixir_20210126.csv)and use a 'cleaned' CSV file for AutoML. The 'cleaned' data has all non-imporant columns removed and has removed the entries for individual players. Our task calls for us to only use the 'team' entries.
 
 ## Automated ML
     experiment_timeout_minutes: 30: Defines the maximum amount of time the iterations can take before the experiment terminates.
@@ -34,12 +34,10 @@ The best AutoML Model was a VotingEnsemble classifier with an accuracy of 75.13%
 
 As stated earlier, teams that are ahead at ten and/or fifteen minutes do not always come out the victor. Teams can opt for strategies that are weak early in the game, yet become stronger later on in the game. Such characteristics are not easily captured through our dataset.
 
-To improve our performance, while we are constrained by our domain and problem space, we can use deep learning or GPU resources to improve our experiment speed. We can also improve performance by including more features or by using cross-validations instead of holding out a part of the data as a validation set.
-
 ## Hyperparameter Tuning
 I chose to use a LogisticRegression model with SKLearn to run a HyperDrive experiment with two parameters:
-* C: Determines regularization strength. Higher C value means less regularization.
-* Maximum # of Iterations: The maximum number of training iterations per child run.
+* C: Determines regularization strength (uniform range between 0.1 and 10). Higher C value means less regularization. I chose this hyperparameter to test the generalization error and optimize how well the trained model responds to unknown examples.
+* Maximum # of Iterations: The maximum number of training iterations per child run. I chose this hyperparameter as a means against overfitting and to mitigate any possible overuse of compute resources. The Bayesian sampler picked from these choices: 20,40,60,80,100,150,200,300,400,600,800.
 
 For parameter sampling, I chose Bayesian sampling, which picks hyperparameter samples based on the performances of previous samples. Therefore, there is no need for an early termination policy. We can add more parameters to tune as well as apply the same suggested improvements as with the AutoML model. As with the AutoML model, we are constrained in our accuracy by domain and problem space.
 ### Results
@@ -54,7 +52,7 @@ In order to deploy a model as an endpoint, we follow these steps:
 3. Technical details such as container type and resource allocation. Application Insights can also be enabled.
 
 For this project, I deployed the AutoML model as an Azure Container Instance (ACI) with 1 CPU, 4 GB RAM, and application insights enabled.
-![EndpointCode](./screenshots/endpoint.PNG)
+![EndpointCode](.screenshots/endpoint.PNG, "Endpoint deployment in Jupyter Notebook using Azure ML SDK.")
 ![Endpoint](./screenshots/deployed_endpoint.PNG)
 
 To query our endpoint, we need to create a JSON object based on our scoring script as well as the Swagger JSON which functions as a schema. We then need the scoring URI (which can be accessed by the scoring_uri member of the Webservice class). We then create our POST request and send it to our endpoint like this:
@@ -65,3 +63,6 @@ response = requests.post(scoring_uri, input_data, headers=headers)
 ```
 ## Screen Recording
 [Screencast link](https://youtu.be/WbFmuYzQSkw)
+
+## Future Improvements
+To improve our performance, while we are constrained by our domain and problem space, we can use deep learning or GPU resources to improve our experiment speed. We can also improve performance by including more features or by using cross-validations instead of holding out a part of the data as a validation set.
