@@ -64,4 +64,5 @@ response = requests.post(scoring_uri, input_data, headers=headers)
 [Screencast link](https://youtu.be/WbFmuYzQSkw)
 
 ## Future Improvements
-To improve our performance, while we are constrained by our domain and problem space, we can use deep learning or GPU resources to improve our experiment speed. We can also improve performance by including more features or by using cross-validations instead of holding out a part of the data as a validation set.
+To improve our performance, while we are constrained by our domain and problem space, we can use deep learning or GPU resources to improve our experiment speed. We can also improve performance by including more features or by using cross-validations instead of holding out a part of the data as a validation set. Furthermore, the Blue side has a higher winrate than the Red side. While this win rate difference is not enough to cause any imbalanced classes, we could consider using AUC_micro as our performance metric or include the corresponding Red side data from our match dataset.
+ 
