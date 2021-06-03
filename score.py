@@ -18,7 +18,7 @@ from inference_schema.parameter_types.numpy_parameter_type import NumpyParameter
 from inference_schema.parameter_types.pandas_parameter_type import PandasParameterType
 
 
-input_sample = pd.DataFrame({"Column1": pd.Series([0], dtype="int64"), "golddiffat10": pd.Series([0.0], dtype="float64"), "xpdiffat10": pd.Series([0.0], dtype="float64"), "golddiffat15": pd.Series([0.0], dtype="float64"), "xpdiffat15": pd.Series([0.0], dtype="float64")})
+input_sample = pd.DataFrame({"golddiffat10": pd.Series([0.0], dtype="float64"), "xpdiffat10": pd.Series([0.0], dtype="float64"), "golddiffat15": pd.Series([0.0], dtype="float64"), "xpdiffat15": pd.Series([0.0], dtype="float64")})
 output_sample = np.array([0])
 try:
     log_server.enable_telemetry(INSTRUMENTATION_KEY)
